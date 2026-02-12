@@ -8,7 +8,7 @@ This application allows users to securely upload multiple PDFs and ask contextua
 
 🔗 Live Demo
 
-👉 Add your Streamlit URL here
+👉 [Streamlit URL here](https://enterprise-rag-assistant-es37iz4sph6bxfg4autk4p.streamlit.app/)
 🏷 Latest Release: v2.0
 
 ⸻
