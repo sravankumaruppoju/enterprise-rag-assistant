@@ -2,3 +2,12 @@ venv/
 .env
 _pycache_/
 *.pyc
+# secrets
+.env
+.streamlit/secrets.toml
+
+# python
+venv/
+_pycache_/
+*.pyc
+.DS_Store
