@@ -102,15 +102,16 @@ for message in st.session_state.messages:
 # Ask question
 query = st.chat_input("Ask a question about the document")
 
+
 if query:
     docs = retriever.invoke(query)
 
-context = ""
-sources = []
+    context = ""
+    sources = []
 
-for doc in docs:
-    context += doc.page_content + "\n\n"
-    sources.append(f"Page {doc.metadata.get('page', 'N/A')}")
+    for doc in docs:
+        context += doc.page_content + "\n\n"
+        sources.append(f"Page {doc.metadata.get('page', 'N/A')}")
 
     chain = prompt | llm
     response = chain.invoke({
@@ -119,13 +120,13 @@ for doc in docs:
     })
 
     st.markdown("### 📌 Answer")
-st.markdown(response.content)
+    st.markdown(response.content)
 
-# Remove duplicate pages
-unique_sources = list(set(sources))
+    # Remove duplicate pages
+    unique_sources = list(set(sources))
 
-st.markdown("### 📚 Sources")
-st.markdown(", ".join(unique_sources))
+    st.markdown("### 📄 Sources")
+    st.markdown(", ".join(unique_sources))
 
     # cleanup temp file
     try:
