@@ -50,6 +50,13 @@ require_password()
 # -------- END PASSWORD PROTECTION --------
 
 st.title("Enterprise RAG Assistant 🚀")
+# --- Chat History Memory ---
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Clear chat button
+if st.button("🗑 Clear Chat"):
+    st.session_state.messages = []
 
 uploaded_file = st.file_uploader("Upload a PDF", type="pdf")
 
@@ -87,13 +94,23 @@ Context:
 Question:
 {question}
 """)
+# ---- Display Chat History ----
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
 # Ask question
-query = st.text_input("Ask a question about the document")
+query = st.chat_input("Ask a question about the document")
 
 if query:
     docs = retriever.invoke(query)
-    context = "\n\n".join([doc.page_content for doc in docs])
+
+context = ""
+sources = []
+
+for doc in docs:
+    context += doc.page_content + "\n\n"
+    sources.append(f"Page {doc.metadata.get('page', 'N/A')}")
 
     chain = prompt | llm
     response = chain.invoke({
@@ -101,7 +118,14 @@ if query:
         "question": query
     })
 
-    st.write(response.content)
+    st.markdown("### 📌 Answer")
+st.markdown(response.content)
+
+# Remove duplicate pages
+unique_sources = list(set(sources))
+
+st.markdown("### 📚 Sources")
+st.markdown(", ".join(unique_sources))
 
     # cleanup temp file
     try:
