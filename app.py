@@ -12,6 +12,9 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.prompts import ChatPromptTemplate
 
+# ✅ RERANKER (Enterprise upgrade)
+from sentence_transformers import CrossEncoder
+
 
 # -------------------- CONFIG --------------------
 st.set_page_config(page_title="Enterprise RAG Assistant", page_icon="🚀", layout="centered")
@@ -74,18 +77,23 @@ require_password()
 st.title("Enterprise RAG Assistant 🚀")
 
 st.sidebar.header("⚙️ Settings")
-top_k = st.sidebar.slider("Top-k chunks", 2, 10, 4)
+top_k = st.sidebar.slider("Top-k final chunks", 2, 10, 4)
 temperature = st.sidebar.slider("Temperature", 0.0, 1.0, 0.0, 0.1)
 model_name = st.sidebar.selectbox("Model", ["gpt-4o-mini", "gpt-4.1-mini"], index=0)
+
+# How many chunks to fetch BEFORE rerank (bigger = better retrieval)
+pre_rerank_k = st.sidebar.slider("Pre-rerank fetch (bigger = better)", 8, 50, 20)
+
 logout_button()
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("*How it works*")
+st.sidebar.markdown("How it works")
 st.sidebar.markdown(
     "- Upload PDF(s)\n"
     "- We chunk + embed + store in Chroma\n"
-    "- Retrieve top chunks per question\n"
-    "- Answer strictly from retrieved context\n"
+    "- Retrieve many chunks\n"
+    "- ✅ Re-rank chunks with CrossEncoder\n"
+    "- Answer strictly from best context\n"
 )
 
 
@@ -111,6 +119,11 @@ def get_llm(model: str, temp: float):
 @st.cache_resource(show_spinner=False)
 def get_embeddings():
     return OpenAIEmbeddings()
+
+@st.cache_resource(show_spinner=False)
+def load_reranker():
+    # Cross-encoder reranker (very strong for QA relevance)
+    return CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
 
 def save_uploaded_to_temp(uploaded) -> str:
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
@@ -156,19 +169,44 @@ def render_sources(docs):
         with st.expander(f"{src} — Page {page}"):
             st.write(preview)
 
+def rerank_docs(query: str, docs, final_k: int):
+    """
+    Takes retrieved docs and re-ranks using cross-encoder.
+    Returns best final_k docs.
+    """
+    try:
+        reranker = load_reranker()
+        pairs = [(query, d.page_content or "") for d in docs]
+        scores = reranker.predict(pairs)
+        ranked = sorted(zip(docs, scores), key=lambda x: x[1], reverse=True)
+        return [d for d, _ in ranked[:final_k]]
+    except Exception as e:
+        # fallback to original docs if reranker fails
+        st.warning(f"Reranker fallback (reason: {e})")
+        return docs[:final_k]
+
 
 # -------------------- PROMPTS --------------------
 qa_prompt = ChatPromptTemplate.from_template("""
-You are a helpful assistant. Answer the question using ONLY the context below.
-If the answer is not present in the context, say: "I don't know based on the uploaded document."
+You are a financial document analysis assistant.
+
+Use the provided context to answer the question.
+You are allowed to infer and explain meaning based on the context, 
+but DO NOT use outside knowledge.
+
+If the context is partially relevant, still provide the best possible explanation grounded in it.
+
+If the context is completely unrelated, then say:
+"I cannot find relevant information in the document."
 
 Context:
 {context}
 
 Question:
 {question}
-""")
 
+Answer in a clear and simple explanation.
+""")
 summary_prompt = ChatPromptTemplate.from_template("""
 Create an executive summary from the context:
 - 5 bullet highlights
@@ -271,10 +309,13 @@ if query:
     with st.chat_message("user"):
         st.markdown(query)
 
-    retriever = st.session_state.db.as_retriever(search_kwargs={"k": top_k})
+    # Retrieve more first, then rerank to best
+    retriever = st.session_state.db.as_retriever(search_kwargs={"k": pre_rerank_k})
 
-    with st.spinner("Retrieving + generating answer..."):
-        docs = retriever.invoke(query)
+    with st.spinner("Retrieving + reranking + generating answer..."):
+        initial_docs = retriever.invoke(query)
+        docs = rerank_docs(query, initial_docs, top_k)
+
         context = "\n\n".join([d.page_content for d in docs if d.page_content])
 
         llm = get_llm(model_name, temperature)

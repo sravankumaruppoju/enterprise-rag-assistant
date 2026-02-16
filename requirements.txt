@@ -7,3 +7,4 @@ chromadb
 faiss-cpu
 python-dotenv
 tiktoken
+sentence-transformers

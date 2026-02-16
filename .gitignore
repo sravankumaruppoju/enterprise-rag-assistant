@@ -1,13 +1,7 @@
-venv/
 .env
+venv/
 _pycache_/
 *.pyc
-# secrets
-.env
+.chromadb/
+chroma/
 .streamlit/secrets.toml
-
-# python
-venv/
-_pycache_/
-*.pyc
-.DS_Store
