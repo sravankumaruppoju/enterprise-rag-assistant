@@ -1,162 +1,88 @@
-🚀 Enterprise RAG Assistant (v2.0)
+# 🚀 Enterprise RAG Assistant
 
-A production-ready Retrieval-Augmented Generation (RAG) system built using Streamlit, LangChain, OpenAI, and Chroma.
+🔴 *Live AI Application*  
+https://enterprise-rag-assistant-ai.streamlit.app
 
-This application allows users to securely upload multiple PDFs and ask contextual questions powered by OpenAI embeddings and LLMs.
+---
 
-⸻
+## What This Is
+A production-style Retrieval-Augmented Generation (RAG) system that allows users to upload private documents and query them using grounded LLM responses.
 
-🔗 Live Demo
+This project demonstrates how companies connect Large Language Models to internal data securely.
 
-👉 [Streamlit URL here](https://enterprise-rag-assistant-es37iz4sph6bxfg4autk4p.streamlit.app/)
-🏷 Latest Release: v2.0
+This is not a chatbot — it is a document intelligence system.
 
-⸻
+---
 
-📌 Overview
+## Problem
+LLMs hallucinate because they don’t have access to company knowledge.
 
-Enterprise RAG Assistant is a secure multi-document question-answering system designed with real-world GenAI architecture principles.
+Organizations need AI assistants that:
+- understand internal documents
+- answer accurately
+- do not fabricate information
 
-The system:
-	•	Accepts multiple PDF documents
-	•	Chunks and embeds text using OpenAI embeddings
-	•	Stores vectors in Chroma
-	•	Retrieves relevant context dynamically
-	•	Generates grounded answers using OpenAI LLMs
-	•	Provides source references (file + page)
-	•	Enforces password protection for secure access
+---
 
-This is not a simple chatbot — it is an enterprise-grade RAG implementation
+## Solution
+This system connects an LLM to a retrieval layer over uploaded PDFs.
 
-🧠 System Architecture
-User
-  ↓
-Streamlit UI
-  ↓
-LangChain Orchestration
-  ↓
-Chroma Vector Store
-  ↓
-OpenAI Embeddings
-  ↓
-OpenAI LLM (gpt-4o-mini / gpt-4.1-mini)
+The model *only answers using retrieved document context*.  
+If the answer is not found → it refuses to guess.
 
-Processing Flow
-	1.	User uploads one or more PDFs
-	2.	Text is chunked using RecursiveCharacterTextSplitter
-	3.	Embeddings are generated via OpenAI
-	4.	Chunks are stored in Chroma vector DB
-	5.	Top-K relevant chunks are retrieved per query
-	6.	LLM generates answer strictly from retrieved context
-	7.	Sources are displayed for transparency
+---
 
-⸻
+## How It Works
+1. User uploads PDFs
+2. Documents are chunked
+3. OpenAI embeddings convert text to vectors
+4. Stored in Chroma vector database
+5. Relevant chunks retrieved per question
+6. LLM generates grounded answer
+7. Source page references returned
 
-✨ Key Features
+---
 
-🔐 Secure Access
-	•	Password protection
-	•	Secure API key handling via Streamlit Secrets
-	•	Environment-based configuration
+## System Architecture
+User → Streamlit UI → LangChain Retrieval → Chroma Vector DB → OpenAI Embeddings → LLM Response
 
-📂 Multi-PDF Support
-	•	Upload multiple PDFs simultaneously
-	•	Automatic indexing refresh
-	•	SHA256-based caching to avoid duplicate embeddings
+---
 
-⚙️ Configurable Retrieval
-	•	Adjustable Top-K chunk retrieval
-	•	Adjustable temperature
-	•	Model selection (gpt-4o-mini / gpt-4.1-mini)
+## Key Features
+- Multi-PDF document search
+- Source citations (file + page)
+- Hallucination control prompting
+- Password-protected access
+- Embedding caching (SHA256)
+- Configurable retrieval parameters
+- Cloud deployment (Streamlit)
 
-🧠 Hallucination Reduction
+---
 
-The prompt enforces:
+## Tech Stack
+Python • Streamlit • LangChain • OpenAI • ChromaDB
 
-If the answer is not present in the context, respond with:
-“I don’t know based on the uploaded document.”
+---
 
-This ensures grounded responses.
+## Real-World Use Cases
+- Enterprise knowledge assistants
+- Legal document analysis
+- Healthcare policy QA
+- Financial report querying
+- Compliance document review
 
-🚀 Production-Ready Design
-	•	Cached embeddings & LLM
-	•	Clean Git branching workflow (v2 → main)
-	•	Versioned release tagging
-	•	Cloud deployment on Streamlit
+---
 
-⸻
+## Why This Matters
+This project demonstrates production GenAI engineering:
+- Retrieval pipelines
+- Vector databases
+- Prompt grounding
+- Secure deployment
+- Versioned releases
 
-🛠 Tech Stack
-	•	Python
-	•	Streamlit
-	•	LangChain
-	•	OpenAI (Embeddings + LLM)
-	•	Chroma (Vector Database)
-	•	dotenv
-	•	SHA256 hashing (document fingerprinting)
+---
 
-⸻
-
-🔎 Engineering Highlights
-
-1️⃣ Recursive Chunking
-
-Improves semantic retrieval quality over simple character splitting.
-
-2️⃣ Vector Caching
-
-Prevents re-embedding identical documents using SHA256 fingerprinting.
-
-3️⃣ Strict Context Prompting
-
-Minimizes hallucination by restricting answers to retrieved context only.
-
-4️⃣ Resource Caching
-
-@st.cache_resource used for:
-	•	LLM initialization
-	•	Embedding model
-	•	Vector store build
-
-Improves performance and scalability.
-
-⸻
-
-📊 Scalability Path
-
-This architecture can easily evolve to:
-	•	Persistent vector storage (Pinecone / Weaviate)
-	•	Hybrid retrieval (BM25 + Vector search)
-	•	FastAPI backend for production
-	•	Role-based access control
-	•	RAG evaluation (RAGAS)
-	•	Streaming LLM responses
-	•	LangSmith observability integration
-
-  🎯 Use Cases
-	•	Enterprise knowledge base assistant
-	•	Legal document analysis
-	•	Healthcare policy QA
-	•	Financial document retrieval
-	•	Resume & compliance document parsing
-
-⸻
-
-👤 Author
-
-Sravan Kumar Uppoju
-Senior Data Scientist | GenAI Engineer
-
-⸻
-
-⭐ Why This Project Stands Out
-
-This project demonstrates:
-	•	Real-world RAG architecture
-	•	Secure GenAI system design
-	•	Vector database integration
-	•	Prompt engineering for hallucination control
-	•	Cloud deployment workflow
-	•	Version control & release management
-
-It reflects production-level AI engineering practices.
+## Author
+*Sravan Kumar Uppoju*  
+Senior Data Scientist / GenAI Engineer
