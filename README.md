@@ -1,128 +1,136 @@
-# 🧠 Enterprise RAG Assistant — v2 (Engineering Build)
+# 🧪 Enterprise RAG Assistant — Engineering Build (v2)
 
-🔬 Development Version of the production GenAI system.
-
-Live Demo:
+🔗 Live Demo (Engineering Build)  
 https://enterprise-rag-assistant-es37iz4sph6bxfg4autk4p.streamlit.app/
 
 ---
 
-## Purpose of v2
-This branch represents the engineering iteration of the Enterprise RAG Assistant where system reliability, security, and retrieval quality were improved before merging to main.
+## About This Branch
 
-The goal of v2 was to transform a simple RAG prototype into a production-style GenAI application.
+This branch represents the *development and system engineering stage* of the Enterprise RAG Assistant project.
 
----
+The goal of this branch is to demonstrate how a Generative AI application is designed, tested, and improved before being promoted to a stable production deployment.
 
-## What Changed From v1
-v1 was a basic PDF Q&A chatbot.
+The stabilized production version of the project is available in the main branch.
 
-v2 introduced system-level capabilities:
+Workflow used:
 
-- Multi-document ingestion
-- Retrieval caching
-- Password protection
-- Configurable retrieval parameters
-- Controlled prompting to reduce hallucinations
-- Deployment-ready configuration
+development (v2) → production release (main)
+
+This reflects a real-world ML deployment lifecycle.
 
 ---
 
-## Architecture
+## Project Description
 
-User Query  
+Enterprise RAG Assistant is a multi-document question-answering system built using Retrieval-Augmented Generation (RAG).
+
+The application allows users to upload PDFs and ask contextual questions.  
+Instead of guessing, the system retrieves relevant document sections and forces the LLM to answer only using retrieved evidence.
+
+This reduces hallucinations and produces grounded responses.
+
+---
+
+## System Architecture
+
+User  
 ↓  
-Streamlit Interface  
+Streamlit UI  
 ↓  
 LangChain Retrieval Pipeline  
 ↓  
-Chroma Vector Store  
+Chroma Vector Database  
 ↓  
 OpenAI Embeddings  
 ↓  
-LLM (gpt-4o-mini / gpt-4.1-mini)  
-↓  
-Grounded Response + Source Pages
+OpenAI LLM
 
 ---
 
-## Retrieval Pipeline
+## Processing Pipeline
 
-1. Upload PDF(s)
-2. Text extracted using PyPDF loader
-3. Recursive chunking
-4. OpenAI embeddings generated
-5. Stored in Chroma vector DB
-6. Top-K retrieval per query
-7. Context passed to LLM
-8. LLM restricted to retrieved context
-
-If the answer is not found:
-> “I don’t know based on the uploaded document.”
-
-This prevents hallucination.
+1. User uploads one or more PDF documents
+2. Text is chunked using RecursiveCharacterTextSplitter
+3. OpenAI embeddings are generated
+4. Chunks stored inside Chroma vector database
+5. Relevant chunks retrieved per question (Top-K retrieval)
+6. LLM generates answer strictly from retrieved context
+7. Sources displayed (file + page number)
 
 ---
 
 ## Key Engineering Features
 
-### 🔐 Secure Access
-- Password-protected UI
-- Streamlit Secrets API key management
-- Environment configuration
-
-### 📂 Multi-Document Support
-- Upload multiple PDFs simultaneously
+### Multi-Document Retrieval
+- Multiple PDFs uploaded simultaneously
 - Automatic index refresh
-- Duplicate detection using SHA256 document hashing
+- Cross-document search
 
-### ⚙️ Retrieval Controls
-- Adjustable Top-K
-- Temperature control
+### Hallucination Control
+The prompt forces the model:
+
+> “If the answer is not present in the context, respond that you don’t know.”
+
+This prevents fabricated answers.
+
+### Caching System
+- SHA256 document fingerprinting
+- Avoids re-embedding duplicate files
+- Faster response time
+
+### Secure Access
+- Password protection
+- API key stored using Streamlit Secrets
+- Environment-based configuration
+
+### Adjustable Retrieval
+- Configurable Top-K chunk selection
+- Adjustable temperature
 - Model selection
-
-### 🚀 Performance Optimization
-- @st.cache_resource used for:
-  - embeddings
-  - vector store
-  - LLM initialization
-
-Reduces latency and cost.
-
----
-
-## Why This Branch Matters
-This branch demonstrates the transition from:
-
-*Prototype → Reliable GenAI System*
-
-Key learnings implemented:
-- retrieval grounding
-- caching strategy
-- prompt control
-- cloud deployment workflow
-- secure API handling
 
 ---
 
 ## Tech Stack
-Python  
-Streamlit  
-LangChain  
-OpenAI API  
-ChromaDB  
-dotenv
+
+- Python
+- Streamlit
+- LangChain
+- OpenAI (Embeddings + LLM)
+- ChromaDB
+- dotenv
+- SHA256 hashing
 
 ---
 
-## Future Work
-- Persistent vector database (Pinecone)
-- FastAPI backend
-- RAG evaluation (RAGAS)
-- LangSmith tracing
+## Purpose of v2
+
+This branch focuses on *engineering the RAG pipeline*:
+
+- retrieval quality
+- hallucination reduction
+- caching strategy
+- document indexing
+- prompt grounding
+
+After validation, the system was stabilized and promoted to the main branch as the production deployment.
+
+---
+
+## What This Demonstrates
+
+This branch shows practical Generative AI engineering skills:
+
+- Retrieval-Augmented Generation architecture
+- Vector database integration
+- Prompt engineering for grounded answers
+- Secure LLM usage
+- Deployment workflow
+- Versioned release management
 
 ---
 
 ## Author
-Sravan Kumar Uppoju  
-Senior Data Scientist / GenAI Engineer
+
+*Sravan Kumar Uppoju*  
+Senior Data Scientist | GenAI Enginee
